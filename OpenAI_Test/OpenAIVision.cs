@@ -5,14 +5,14 @@ namespace OpenAI_Test;
 
 internal static class OpenAiVision
 {
-   public static async Task<string?> OpenAiVisionCall()
+    public static async Task<string?> OpenAiVisionCall()
     {
         var apiKey = Environment.GetEnvironmentVariable("OpenAI_ApiKey");
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri("https://api.openai.com/v1/chat/completions");
         httpClient.DefaultRequestHeaders.Add("Authorization",
-            $"Bearer {apiKey}"); 
-    
+            $"Bearer {apiKey}");
+
         var jsonData = new
         {
             model = "gpt-4o",
@@ -41,6 +41,12 @@ internal static class OpenAiVision
 
         var response = await httpClient.PostAsJsonAsync("", jsonData);
         var jsonResponse = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
-        return jsonResponse.RootElement.GetProperty("choices").EnumerateArray().First().GetProperty("message").GetProperty("content").GetString();
+        return jsonResponse.RootElement
+            .GetProperty("choices")
+            .EnumerateArray()
+            .First()
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
     }
 }
