@@ -7,9 +7,9 @@ internal static class OpenAiVision
 {
     public static async Task<string?> OpenAiVisionCall()
     {
+        var requestUri = new Uri("https://api.openai.com/v1/chat/completions");
         var apiKey = Environment.GetEnvironmentVariable("OpenAI_ApiKey");
-        using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("https://api.openai.com/v1/chat/completions");
+        var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Add("Authorization",
             $"Bearer {apiKey}");
 
@@ -39,7 +39,7 @@ internal static class OpenAiVision
             max_tokens = 300
         };
 
-        var response = await httpClient.PostAsJsonAsync("", jsonData);
+        var response = await httpClient.PostAsJsonAsync(requestUri, jsonData);
         var jsonResponse = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         return jsonResponse.RootElement
             .GetProperty("choices")

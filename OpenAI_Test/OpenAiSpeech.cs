@@ -1,19 +1,16 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http.Json;
+
 namespace OpenAI_Test;
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 
 internal static class OpenAiSpeech
 {
     public static async Task<Stream?> CreateSpeechStreamAsync(string visionInput)
     {
+        var requestUri = new Uri("https://api.openai.com/v1/audio/speech");
         var apiKey = Environment.GetEnvironmentVariable("OpenAI_ApiKey");
         var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        httpClient.DefaultRequestHeaders.Add("Authorization",
+            $"Bearer {apiKey}");
 
         var jsonData = new
         {
@@ -22,8 +19,8 @@ internal static class OpenAiSpeech
             voice = "alloy"
         };
 
-        var content = new StringContent(JsonSerializer.Serialize(jsonData), Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync("https://api.openai.com/v1/audio/speech", content);
+
+        var response = await httpClient.PostAsJsonAsync(requestUri, jsonData);
 
         if (response.IsSuccessStatusCode)
         {
